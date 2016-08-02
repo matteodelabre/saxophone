@@ -1,11 +1,18 @@
 'use strict';
 
-const stampit = require('stampit');
 const EventEmitter = require('events').EventEmitter;
 
-const Saxophone = stampit().refs({
-    input: ''
-}).methods({
+function Saxophone(input) {
+    return Object.create(saxophonePrototype, {
+        input: {
+            writable: false,
+            configurable: false,
+            value: input
+        }
+    });
+}
+
+const saxophonePrototype = {
     ...EventEmitter.prototype,
 
     parse() {
@@ -108,6 +115,6 @@ const Saxophone = stampit().refs({
 
         this.emit('end');
     }
-});
+};
 
 module.exports = Saxophone;
