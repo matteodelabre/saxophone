@@ -27,7 +27,7 @@ Inspired by SAX libraries such as
 
 ## Installation
 
-This library works both in Node.JS and recent browsers.
+This library works both in Node.JS ≥4.0 and recent browsers.
 To install with `npm`:
 
 ```sh
