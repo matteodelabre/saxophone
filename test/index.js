@@ -3,7 +3,7 @@
 const test = require('tape');
 const uniq = require('lodash.uniq');
 const tags = require('common-tags');
-const Saxophone = require('../dist');
+const Saxophone = require('..');
 
 const expectEvents = (assert, xml, events) => {
     let eventsIndex = 0;

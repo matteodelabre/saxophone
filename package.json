@@ -9,12 +9,12 @@
     "url": "https://github.com/matteodelabre/saxophone.git"
   },
   "scripts": {
-    "build": "babel index.js --out-dir dist",
+    "build": "babel index.js test/index.js --out-dir dist",
     "lint": "eslint .",
     "pretest": "npm run build",
-    "test": "tape test | tap-spec && npm run lint",
+    "test": "tape dist/test | tap-spec && npm run lint",
     "precoverage": "npm run build",
-    "coverage": "istanbul cover -- tape test",
+    "coverage": "istanbul cover -- tape dist/test",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
     "prebenchmark": "npm run build",
     "benchmark": "node benchmark",
