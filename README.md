@@ -8,7 +8,9 @@ Fast and lightweight event-driven XML parser in pure JavaScript.
 [![coverage](https://img.shields.io/coveralls/matteodelabre/saxophone.svg?style=flat-square)](https://coveralls.io/github/matteodelabre/saxophone)
 [![dependencies status](http://img.shields.io/david/matteodelabre/saxophone.svg?style=flat-square)](https://david-dm.org/matteodelabre/saxophone)
 
-Saxophone is inspired from SAX parsers: it does not generate any
+Saxophone is inspired by SAX parsers like
+[sax-js](https://github.com/isaacs/sax-js) and
+[easysax](https://github.com/vflash/easysax): it does not generate any
 DOM while parsing documents. Instead, it reports parsing events
 for each tag or text node encountered. This means that Saxophone
 has a really low memory footprint.
@@ -18,12 +20,9 @@ and does not check whether the document is well-formed or valid,
 making it super-fast (see [benchmarks](#benchmarks) below).
 
 This library is best suited when you need to extract simple data
-out of an XML file received from a source that you trust in emitting
-well-formed documents, such as an API endpoint.
-
-Inspired by SAX libraries such as
-[sax-js](https://github.com/isaacs/sax-js) and
-[easysax.](https://github.com/vflash/easysax)
+out of an XML document that you know is well-formed. The parser will
+not report precise errors in case of syntax problems. An example would
+be reading data from an API endpoint.
 
 ## Installation
 
