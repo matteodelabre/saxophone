@@ -1,6 +1,6 @@
 {
   "name": "saxophone",
-  "description": "Fast SAX-inspired XML parser in pure JavaScript",
+  "description": "Fast and lightweight event-driven XML parser in pure JavaScript",
   "version": "0.1.0",
   "license": "MIT",
   "main": "dist/index.js",
