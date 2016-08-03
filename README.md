@@ -34,7 +34,41 @@ To install with `npm`:
 $ npm install --save saxophone
 ```
 
-## Example
+## Benchmarks
+
+| Library            | Operations per second (higher is better) |
+|--------------------|-----------------------------------------:|
+| **Saxophone**      | **3,222 ops/sec ±5.39%**                 |
+| EasySax            | 2,128 ops/sec ±8.87%                     |
+| node-expat         | 884 ops/sec ±5.39%                       |
+| libxmljs.SaxParser | 609 ops/sec ±4.61%                       |
+| sax-js             | 113 ops/sec ±3.87%                       |
+
+To run the benchmarks by yourself, use the following commands:
+
+```sh
+$ git clone https://github.com/matteodelabre/saxophone.git
+$ cd saxophone
+$ npm install
+$ npm install easysax node-expat libxmljs sax
+$ npm run benchmark
+```
+
+## Tests and coverage
+
+To run tests and check coverage, use the following commands:
+
+```sh
+$ git clone https://github.com/matteodelabre/saxophone.git
+$ cd saxophone
+$ npm install
+$ npm test
+$ npm run coverage
+```
+
+## Usage
+
+### Example
 
 ```js
 const Saxophone = require('saxophone');
@@ -67,44 +101,80 @@ Open tag "example" with attributes: {"id":"2"}.
 Parsing finished.
 ```
 
-## Benchmarks
+### API
 
-| Library            | Operations per second (higher is better) |
-|--------------------|-----------------------------------------:|
-| **Saxophone**      | **3,222 ops/sec ±5.39%**                 |
-| EasySax            | 2,128 ops/sec ±8.87%                     |
-| node-expat         | 884 ops/sec ±5.39%                       |
-| libxmljs.SaxParser | 609 ops/sec ±4.61%                       |
-| sax-js             | 113 ops/sec ±3.87%                       |
-
-To run the benchmark by yourself, clone the repo,
-install the development dependencies and run the
-benchmark command.
-
-```sh
-$ git clone https://github.com/matteodelabre/saxophone.git
-$ cd saxophone
-$ npm install
-$ npm install easysax node-expat libxmljs sax
-$ npm run benchmark
-```
-
-## API
-
-### `Saxophone()`
+#### `Saxophone()`
 
 Returns a new Saxophone instance. This is a factory method,
 so you **must not prefix it with the `new` keyword.**
 
-### `Saxophone#on()`, `Saxophone#removeListener()`, ...
+#### `Saxophone#on()`, `Saxophone#removeListener()`, ...
 
 Saxophone composes with the EventEmitter methods. To work
 with listeners, check out [Node's documentation.](https://nodejs.org/api/events.html)
 
-### `Saxophone#parse(xml)`
+#### `Saxophone#parse(xml)`
 
 Triggers the actual parsing. This method will fire registered listeners
 so you need to set them up before calling it.
 
 `xml` is a string containing the XML that you want to parse. At this
 time, Saxophone does not support `Buffer`s or `Stream`s.
+
+### Events
+
+#### `tagopen`
+
+Emitted when an opening tag is parsed. This encompasses
+both regular tags and self-closing tags. An object is passed
+with the following data.
+
+* `name`: name of the parsed tag.
+* `attributes`: map containing the tag's attributes as names -> values.
+* `isSelfClosing`: true if the tag is self-closing.
+
+#### `tagclose`
+
+Emitted when a closing tag is parsed. An object containing the
+`name` of the tag is passed.
+
+#### `error`
+
+Emitted when a parsing error is encountered while reading the
+XML stream such that the rest of the XML cannot be correctly
+interpreted.
+
+Because this library's goal is not to provide accurate error
+reports, the passed error will only contain a short description
+of the syntax error (without giving the position, for example).
+
+#### `processinginstruction`
+
+Emitted when a processing instruction (such as `<? contents ?>`)
+is parsed. An object with the `contents` of the processing
+instruction is passed.
+
+#### `text`
+
+Emitted when a text node between two tags is parsed.
+An object with the `contents` of the text node is passed.
+
+#### `cdata`
+
+Emitted when a CDATA section (such as `<![CDATA[ contents ]]>`)
+is parsed. An object with the `contents` of the CDATA section
+is passed.
+
+#### `comment`
+
+Emitted when a comment (such as `<!-- contents -->`)
+is parsed. An object with the `contents` of the comment is passed.
+
+#### `end`
+
+Emitted after all events, without arguments.
+
+## License
+
+Released under the MIT license.  
+[See the full license text.](LICENSE)
