@@ -1,120 +1,146 @@
 'use strict';
 
-const EventEmitter = require('events').EventEmitter;
+const EventEmitter = require('events');
 
-function Saxophone(input) {
-    return Object.create(saxophonePrototype, {
-        input: {
-            writable: false,
-            configurable: false,
-            value: input
+/**
+ * Parse given XML input and emit events corresponding
+ * to the different tokens encountered
+ *
+ * @param {string} input XML input
+ */
+const parse = function (input) {
+    let position = 0;
+
+    while (position < input.length) {
+        // ensure the next char is opening a tag
+        if (input[position] !== '<') {
+            const nextTag = input.indexOf('<', position);
+
+            // if we reached the end, emit a last "text" node and break
+            if (nextTag === -1) {
+                this.emit('text', {contents: input.slice(position)});
+                break;
+            }
+
+            // otherwise, emit a "text" node and continue
+            this.emit('text', {contents: input.slice(position, nextTag)});
+            position = nextTag;
         }
-    });
-}
 
-const saxophonePrototype = {
-    ...EventEmitter.prototype,
+        position += 1;
+        const nextChar = input[position];
 
-    parse() {
-        const {input} = this;
-        let position = 0;
+        // begins a DOCTYPE, CDATA or comment section
+        if (nextChar === '!') {
+            position += 1;
+            const nextNextChar = input[position];
 
-        // recognize a section delimited by `start` and `end`
-        // immediatly after the current position in `input`,
-        // reporting an error if it is never closed and
-        // returning false if the section is not there
-        const recognizeDelims = (start, end, type) => {
-            // check if the start sequence is next
-            if (input.indexOf(start, position) !== position) {
-                return false;
+            // recognize CDATA sections (<![CDATA[ ... ]]>)
+            if (nextNextChar === '[' && input.slice(position + 1, position + 7) === 'CDATA[') {
+                position += 7;
+                const cdataClose = input.indexOf(']]>', position);
+
+                if (cdataClose === -1) {
+                    this.emit('error', new Error('Unclosed CDATA section'));
+                    break;
+                }
+
+                // emit a "cdata" node with the section contents
+                this.emit('cdata', {contents: input.slice(position, cdataClose)});
+                position = cdataClose + 3;
+                continue;
             }
-
-            // consume up to the end sequence
-            position += start.length;
-            const closing = input.indexOf(end, position);
-
-            if (closing === -1) {
-                this.emit('error', new Error(`Unclosed ${type}`));
-                position = input.length;
-                return false;
-            }
-
-            const contents = input.slice(position, closing);
-            position = closing + end.length;
-
-            return contents;
-        };
-
-        while (position < input.length) {
-            let contents;
 
             // recognize comments (<!-- ... -->)
-            if ((contents = recognizeDelims('<!--', '-->', 'comment')) !== false) {
-                this.emit('comment', {contents});
-                continue;
-            }
+            if (nextNextChar === '-' && input[position + 1] === '-') {
+                position += 2;
+                const commentClose = input.indexOf('--', position);
 
-            // recognize DOCTYPEs (<!DOCTYPE ...>)
-            if ((contents = recognizeDelims('<!DOCTYPE', '>', 'DOCTYPE')) !== false) {
-                this.emit('doctype', {contents});
-                continue;
-            }
-
-            // recognize CDATAs (<![CDATA[ ... ]]>)
-            if ((contents = recognizeDelims('<![CDATA[', ']]>', 'CDATA section')) !== false) {
-                this.emit('cdata', {contents});
-                continue;
-            }
-
-            // recognize processing instructions (<? ... ?>)
-            if ((contents = recognizeDelims('<?', '?>', 'processing instruction')) !== false) {
-                this.emit('processinginstruction', {contents});
-                continue;
-            }
-
-            // recognize tags (< ... >)
-            if ((contents = recognizeDelims('<', '>', 'tag')) !== false) {
-                // check if the tag is a closing tag
-                if (contents[0] === '/') {
-                    this.emit('tagclose', {name: contents.slice(1)});
-                    continue;
+                if (commentClose === -1) {
+                    this.emit('error', new Error('Unclosed comment'));
+                    break;
                 }
 
-                // check if the tag is self-closing
-                const isSelfClosing = contents[contents.length - 1] === '/';
-
-                if (isSelfClosing) {
-                    contents = contents.slice(0, -1);
+                if (input[commentClose + 2] !== '>') {
+                    this.emit('error', new Error('Unexpected -- inside comment'));
+                    break;
                 }
 
-                // extract the tag name
-                let name = contents, attributes = '';
-                const whitespace = contents.search(/\s/);
-
-                if (whitespace > -1) {
-                    name = contents.slice(0, whitespace);
-                    attributes = contents.slice(whitespace);
-                }
-
-                this.emit('tagopen', {name, attributes, isSelfClosing});
+                // emit a "comment" node with the comment contents
+                this.emit('comment', {contents: input.slice(position, commentClose)});
+                position = commentClose + 3;
                 continue;
             }
 
-            // if we are here, the following bytes are not starting a
-            // tag-like element. Jump right to the next tag start & emit
-            // a text node
-            let nextTagStart = input.indexOf('<', position);
-
-            if (nextTagStart === -1) {
-                nextTagStart = input.length;
-            }
-
-            this.emit('text', {contents: input.slice(position, nextTagStart)});
-            position = nextTagStart;
+            // TODO: recognize DOCTYPEs here
+            this.emit('error', new Error('Unrecognized sequence: <!' + nextNextChar));
+            break;
         }
 
-        this.emit('end');
+        // recognize processing instructions (<? ... ?>)
+        if (nextChar === '?') {
+            position += 1;
+            const piClose = input.indexOf('?>', position);
+
+            if (piClose === -1) {
+                this.emit('error', new Error('Unclosed processing instruction'));
+                break;
+            }
+
+            // emit a "processinginstruction" node with its contents
+            this.emit('processinginstruction', {contents: input.slice(position, piClose)});
+            position = piClose + 2;
+            continue;
+        }
+
+        // recognize regular tags (< ... >)
+        const tagClose = input.indexOf('>', position);
+
+        if (tagClose === -1) {
+            this.emit('error', new Error('Unclosed tag'));
+            break;
+        }
+
+        // check if the tag is a closing tag
+        if (input[position] === '/') {
+            this.emit('tagclose', {name: input.slice(position + 1, tagClose)});
+            position = tagClose + 1;
+            continue;
+        }
+
+        // check if the tag is self-closing
+        const isSelfClosing = input[tagClose - 1] === '/';
+        let realTagClose = isSelfClosing ? tagClose - 1 : tagClose;
+
+        // extract the tag name and attributes
+        const whitespace = input.slice(position).search(/\s/);
+
+        if (whitespace === -1 || whitespace >= tagClose - position) {
+            this.emit('tagopen', {
+                name: input.slice(position, realTagClose),
+                attributes: '',
+                isSelfClosing
+            });
+        } else if (whitespace === 0) {
+            this.emit('error', new Error('Tag names may not start with whitespace'));
+            break;
+        } else {
+            this.emit('tagopen', {
+                name: input.slice(position, position + whitespace),
+                attributes: input.slice(position + whitespace, realTagClose),
+                isSelfClosing
+            });
+        }
+
+        position = tagClose + 1;
     }
+
+    this.emit('end');
+};
+
+const proto = {...EventEmitter.prototype, parse};
+const Saxophone = () => {
+    return Object.create(proto);
 };
 
 module.exports = Saxophone;

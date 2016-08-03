@@ -3,13 +3,14 @@
 const test = require('tape');
 const uniq = require('lodash.uniq');
 const tags = require('common-tags');
-const Saxophone = require('../');
+const Saxophone = require('../dist');
 
-const expectEvents = (assert, sax, events) => {
+const expectEvents = (assert, xml, events) => {
     let eventsIndex = 0;
+    const parser = Saxophone();
 
     uniq(events.map(([name]) => name)).forEach(eventName => {
-        sax.on(eventName, eventArgs => {
+        parser.on(eventName, eventArgs => {
             const [expEventName, expEventArgs] = events[eventsIndex];
             eventsIndex++;
 
@@ -34,97 +35,97 @@ const expectEvents = (assert, sax, events) => {
         });
     });
 
-    sax.on('end', () => assert.end());
-    sax.parse();
+    parser.on('end', () => assert.end());
+    parser.parse(xml);
 };
 
 test('should parse comments', assert => {
     expectEvents(assert,
-        Saxophone('<!-- this is a comment -->'),
+        '<!-- this is a comment -->',
         [['comment', {contents: ' this is a comment '}]]
     );
 });
 
 test('should not parse unclosed comments', assert => {
     expectEvents(assert,
-        Saxophone('<!-- this is a comment ->'),
+        '<!-- this is a comment ->',
         [['error', new Error('Unclosed comment')]]
     );
 });
 
-test('should parse DOCTYPEs', assert => {
+test('should not parse invalid comments', assert => {
     expectEvents(assert,
-        Saxophone('<!DOCTYPE html>'),
-        [['doctype', {contents: ' html'}]]
-    );
-});
-
-test('should not parse unclosed DOCTYPEs', assert => {
-    expectEvents(assert,
-        Saxophone('<!DOCTYPE html'),
-        [['error', new Error('Unclosed DOCTYPE')]]
+        '<!-- this is an -- invalid comment ->',
+        [['error', new Error('Unexpected -- inside comment')]]
     );
 });
 
 test('should parse CDATA sections', assert => {
     expectEvents(assert,
-        Saxophone('<![CDATA[this is a c&data s<>ction]]>'),
+        '<![CDATA[this is a c&data s<>ction]]>',
         [['cdata', {contents: 'this is a c&data s<>ction'}]]
     );
 });
 
 test('should not parse unclosed CDATA sections', assert => {
     expectEvents(assert,
-        Saxophone('<![CDATA[this is a c&data s<>ction]>'),
+        '<![CDATA[this is a c&data s<>ction]>',
         [['error', new Error('Unclosed CDATA section')]]
     );
 });
 
 test('should parse processing instructions', assert => {
     expectEvents(assert,
-        Saxophone('<?xml version="1.0" encoding="UTF-8" ?>'),
+        '<?xml version="1.0" encoding="UTF-8" ?>',
         [['processinginstruction', {contents: 'xml version="1.0" encoding="UTF-8" '}]]
     );
 });
 
 test('should not parse unclosed processing instructions', assert => {
     expectEvents(assert,
-        Saxophone('<?xml version="1.0" encoding="UTF-8">'),
+        '<?xml version="1.0" encoding="UTF-8">',
         [['error', new Error('Unclosed processing instruction')]]
     );
 });
 
 test('should parse simple tags', assert => {
     expectEvents(assert,
-        Saxophone('<tag>'),
+        '<tag>',
         [['tagopen', {name: 'tag', attributes: '', isSelfClosing: false}]]
     );
 });
 
 test('should not parse unclosed tags', assert => {
     expectEvents(assert,
-        Saxophone('<tag'),
+        '<tag',
         [['error', new Error('Unclosed tag')]]
+    );
+});
+
+test('should not parse invalid tags', assert => {
+    expectEvents(assert,
+        '< invalid>',
+        [['error', new Error('Tag names may not start with whitespace')]]
     );
 });
 
 test('should parse self-closing tags', assert => {
     expectEvents(assert,
-        Saxophone('<test />'),
+        '<test />',
         [['tagopen', {name: 'test', attributes: ' ', isSelfClosing: true}]]
     );
 });
 
 test('should parse closing tags', assert => {
     expectEvents(assert,
-        Saxophone('</closed>'),
+        '</closed>',
         [['tagclose', {name: 'closed'}]]
     );
 });
 
 test('should parse tags with attributes', assert => {
     expectEvents(assert,
-        Saxophone('<tag attr="a" /><other attr="b"></other>'),
+        '<tag attr="a" /><other attr="b"></other>',
         [
             ['tagopen', {name: 'tag', attributes: ' attr="a" ', isSelfClosing: true}],
             ['tagopen', {name: 'other', attributes: ' attr="b"', isSelfClosing: false}],
@@ -135,7 +136,7 @@ test('should parse tags with attributes', assert => {
 
 test('should parse text nodes', assert => {
     expectEvents(assert,
-        Saxophone('<textarea> this\nis\na\r\n\ttextual\ncontent  </textarea>'),
+        '<textarea> this\nis\na\r\n\ttextual\ncontent  </textarea>',
         [
             ['tagopen', {name: 'textarea', attributes: '', isSelfClosing: false}],
             ['text', {contents: ' this\nis\na\r\n\ttextual\ncontent  '}],
@@ -146,7 +147,7 @@ test('should parse text nodes', assert => {
 
 test('should parse a complete document', assert => {
     expectEvents(assert,
-        Saxophone(tags.stripIndent`
+        tags.stripIndent`
             <?xml version="1.0" encoding="UTF-8" ?>
             <persons>
                 <!-- List of persons -->
@@ -154,7 +155,7 @@ test('should parse a complete document', assert => {
                 <person name="Raymond J. Garner" address="698-806 Dictum Road" />
                 <person name="Alfonso T. Yang" address="3689 Dolor Rd." />
             </persons>
-        `),
+        `,
         [
             ['processinginstruction', {contents: 'xml version="1.0" encoding="UTF-8" '}],
             ['text', {contents: '\n'}],
