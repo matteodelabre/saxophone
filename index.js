@@ -3,6 +3,16 @@
 const EventEmitter = require('events');
 
 /**
+ * Check if a character is a whitespace character according
+ * to the XML spec (space, carriage return, line feed or tab)
+ *
+ * @param {string} character Character to check
+ * @return {bool} Whether the character is whitespace or not
+ */
+const isWhitespace = character => character === ' ' ||
+    character === '\r' || character === '\n' || character === '\t';
+
+/**
  * Parse given XML input and emit events corresponding
  * to the different tokens encountered
  *
@@ -10,6 +20,7 @@ const EventEmitter = require('events');
  */
 const parse = function (input) {
     let position = 0;
+    const parseAttrs = parseAttributes.bind(this);
 
     while (position < input.length) {
         // ensure the next char is opening a tag
@@ -118,7 +129,7 @@ const parse = function (input) {
         if (whitespace === -1 || whitespace >= tagClose - position) {
             this.emit('tagopen', {
                 name: input.slice(position, realTagClose),
-                attributes: '',
+                attributes: {},
                 isSelfClosing
             });
         } else if (whitespace === 0) {
@@ -127,7 +138,7 @@ const parse = function (input) {
         } else {
             this.emit('tagopen', {
                 name: input.slice(position, position + whitespace),
-                attributes: input.slice(position + whitespace, realTagClose),
+                attributes: parseAttrs(input, position + whitespace, realTagClose),
                 isSelfClosing
             });
         }
@@ -136,6 +147,69 @@ const parse = function (input) {
     }
 
     this.emit('end');
+};
+
+/**
+ * Parse XML attributes
+ */
+const parseAttributes = function (input, position, end) {
+    const attributes = {};
+
+    while (position < end) {
+        // skip all whitespace
+        if (isWhitespace(input[position])) {
+            position += 1;
+            continue;
+        }
+
+        // check that the attribute name contains valid chars
+        const startName = position;
+        let hasError = false;
+
+        while (input[position] !== '=' && position < end) {
+            if (isWhitespace(input[position])) {
+                this.emit('error', new Error('Attribute names may not contain whitespace'));
+                hasError = true;
+                break;
+            }
+
+            position += 1;
+        }
+
+        // this is XML so we need a value for the attribute
+        if (position === end) {
+            this.emit('error', new Error('Expected a value for the attribute'));
+            break;
+        }
+
+        if (hasError) {
+            break;
+        }
+
+        const attrName = input.slice(startName, position);
+        position += 1;
+        const startQuote = input[position];
+        position += 1;
+
+        if (startQuote !== '"' && startQuote !== "'") {
+            this.emit('error', new Error('Attribute values should be quoted'));
+            break;
+        }
+
+        const endQuote = input.indexOf(startQuote, position);
+
+        if (endQuote === -1) {
+            this.emit('error', new Error('Unclosed attribute value'));
+            break;
+        }
+
+        const attrValue = input.slice(position, endQuote);
+
+        attributes[attrName] = attrValue;
+        position = endQuote + 1;
+    }
+
+    return attributes;
 };
 
 const proto = {...EventEmitter.prototype, parse};

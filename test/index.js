@@ -91,7 +91,7 @@ test('should not parse unclosed processing instructions', assert => {
 test('should parse simple tags', assert => {
     expectEvents(assert,
         '<tag>',
-        [['tagopen', {name: 'tag', attributes: '', isSelfClosing: false}]]
+        [['tagopen', {name: 'tag', attributes: {}, isSelfClosing: false}]]
     );
 });
 
@@ -112,7 +112,7 @@ test('should not parse invalid tags', assert => {
 test('should parse self-closing tags', assert => {
     expectEvents(assert,
         '<test />',
-        [['tagopen', {name: 'test', attributes: ' ', isSelfClosing: true}]]
+        [['tagopen', {name: 'test', attributes: {}, isSelfClosing: true}]]
     );
 });
 
@@ -125,12 +125,40 @@ test('should parse closing tags', assert => {
 
 test('should parse tags with attributes', assert => {
     expectEvents(assert,
-        '<tag attr="a" /><other attr="b"></other>',
+        '<tag first="one" second="two"  third="three " /><other attr="value"></other>',
         [
-            ['tagopen', {name: 'tag', attributes: ' attr="a" ', isSelfClosing: true}],
-            ['tagopen', {name: 'other', attributes: ' attr="b"', isSelfClosing: false}],
+            ['tagopen', {name: 'tag', attributes: {first: 'one', second: 'two', third: 'three '}, isSelfClosing: true}],
+            ['tagopen', {name: 'other', attributes: {attr: 'value'}, isSelfClosing: false}],
             ['tagclose', {name: 'other'}]
         ]
+    );
+});
+
+test('should not parse attributes without a value', assert => {
+    expectEvents(assert,
+        '<invalid first>',
+        [['error', new Error('Expected a value for the attribute')]]
+    );
+});
+
+test('should not parse invalid attribute names', assert => {
+    expectEvents(assert,
+        '<invalid this is an attribute="value">',
+        [['error', new Error('Attribute names may not contain whitespace')]]
+    );
+});
+
+test('should not parse unquoted attribute values', assert => {
+    expectEvents(assert,
+        '<invalid attribute=value value=invalid>',
+        [['error', new Error('Attribute values should be quoted')]]
+    );
+});
+
+test('should not parse misquoted attribute values', assert => {
+    expectEvents(assert,
+        '<invalid attribute="value\'>',
+        [['error', new Error('Unclosed attribute value')]]
     );
 });
 
@@ -138,7 +166,7 @@ test('should parse text nodes', assert => {
     expectEvents(assert,
         '<textarea> this\nis\na\r\n\ttextual\ncontent  </textarea>',
         [
-            ['tagopen', {name: 'textarea', attributes: '', isSelfClosing: false}],
+            ['tagopen', {name: 'textarea', attributes: {}, isSelfClosing: false}],
             ['text', {contents: ' this\nis\na\r\n\ttextual\ncontent  '}],
             ['tagclose', {name: 'textarea'}]
         ]
@@ -159,15 +187,15 @@ test('should parse a complete document', assert => {
         [
             ['processinginstruction', {contents: 'xml version="1.0" encoding="UTF-8" '}],
             ['text', {contents: '\n'}],
-            ['tagopen', {name: 'persons', attributes: '', isSelfClosing: false}],
+            ['tagopen', {name: 'persons', attributes: {}, isSelfClosing: false}],
             ['text', {contents: '\n    '}],
             ['comment', {contents: ' List of persons '}],
             ['text', {contents: '\n    '}],
-            ['tagopen', {name: 'person', attributes: ' name="Priscilla Z. Holden" address="320-2518 Taciti Street" ', isSelfClosing: true}],
+            ['tagopen', {name: 'person', attributes: {name: 'Priscilla Z. Holden', address: '320-2518 Taciti Street'}, isSelfClosing: true}],
             ['text', {contents: '\n    '}],
-            ['tagopen', {name: 'person', attributes: ' name="Raymond J. Garner" address="698-806 Dictum Road" ', isSelfClosing: true}],
+            ['tagopen', {name: 'person', attributes: {name: 'Raymond J. Garner', address: '698-806 Dictum Road'}, isSelfClosing: true}],
             ['text', {contents: '\n    '}],
-            ['tagopen', {name: 'person', attributes: ' name="Alfonso T. Yang" address="3689 Dolor Rd." ', isSelfClosing: true}],
+            ['tagopen', {name: 'person', attributes: {name: 'Alfonso T. Yang', address: '3689 Dolor Rd.'}, isSelfClosing: true}],
             ['text', {contents: '\n'}],
             ['tagclose', {name: 'persons'}]
         ]
