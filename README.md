@@ -85,6 +85,7 @@ benchmark command.
 $ git clone https://github.com/matteodelabre/saxophone.git
 $ cd saxophone
 $ npm install
+$ npm install easysax node-expat libxmljs sax
 $ npm run benchmark
 ```
 

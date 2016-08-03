@@ -7,10 +7,14 @@ const path = require('path');
 
 // benchmarked libraries:
 const Saxophone = require('../dist');
-const EasySax = require('easysax');
-const expat = require('node-expat');
-const libxmljs = require('libxmljs');
-const sax = require('sax');
+const failSafe = require('./require-failsafe')();
+
+const EasySax = failSafe.require('easysax');
+const expat = failSafe.require('node-expat');
+const libxmljs = failSafe.require('libxmljs');
+const sax = failSafe.require('sax');
+
+failSafe.commit();
 
 // test file:
 const xml = fs.readFileSync(path.join(__dirname, 'fixture.xml')).toString();
