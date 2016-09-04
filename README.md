@@ -129,6 +129,15 @@ for every tag and it takes some time.
 The result is an object associating the attribute names (as object keys)
 to their attribute values (as object values).
 
+#### `Saxophone.parseEntities(text)`
+
+Parses a piece of XML text and expands all XML entities inside it to
+the character they represent. Just like attributes, this is not
+parsed automatically because it takes some time.
+
+This ignores invalid entities, including unrecognized ones, leaving them
+as-is.
+
 ### Events
 
 #### `tagopen`
@@ -166,6 +175,8 @@ instruction is passed.
 
 Emitted when a text node between two tags is parsed.
 An object with the `contents` of the text node is passed.
+You might need to expand XML entities inside the contents of
+the text node, using `Saxophone.parseEntities`.
 
 #### `cdata`
 
