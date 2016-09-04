@@ -214,9 +214,13 @@ const parse = function (input) {
 };
 
 /**
- * Parse XML attributes
+ * Parse a string of XML attributes to a map of attribute names
+ * to their values
  *
  * @memberof Saxophone
+ * @param {string} input A string of XML attributes
+ * @throws {Error} If the string is malformed
+ * @return {Object} A map of attribute names to their values
  */
 const parseAttrs = input => {
     const attrs = {}, end = input.length;
@@ -231,13 +235,10 @@ const parseAttrs = input => {
 
         // check that the attribute name contains valid chars
         const startName = position;
-        let hasError = false;
 
         while (input[position] !== '=' && position < end) {
             if (isWhitespace(input[position])) {
-                this.emit('error', new Error('Attribute names may not contain whitespace'));
-                hasError = true;
-                break;
+                throw new Error('Attribute names may not contain whitespace');
             }
 
             position += 1;
@@ -245,12 +246,7 @@ const parseAttrs = input => {
 
         // this is XML so we need a value for the attribute
         if (position === end) {
-            this.emit('error', new Error('Expected a value for the attribute'));
-            break;
-        }
-
-        if (hasError) {
-            break;
+            throw new Error('Expected a value for the attribute');
         }
 
         const attrName = input.slice(startName, position);
@@ -259,15 +255,13 @@ const parseAttrs = input => {
         position += 1;
 
         if (startQuote !== '"' && startQuote !== "'") {
-            this.emit('error', new Error('Attribute values should be quoted'));
-            break;
+            throw new Error('Attribute values should be quoted');
         }
 
         const endQuote = input.indexOf(startQuote, position);
 
         if (endQuote === -1) {
-            this.emit('error', new Error('Unclosed attribute value'));
-            break;
+            throw new Error('Unclosed attribute value');
         }
 
         const attrValue = input.slice(position, endQuote);

@@ -150,28 +150,28 @@ test('should parse tag attributes', assert => {
 test('should not parse attributes without a value', assert => {
     assert.throws(() => {
         Saxophone.parseAttrs(' first');
-    }, new Error('Expected a value for the attribute'));
+    }, /Expected a value for the attribute/);
     assert.end();
 });
 
 test('should not parse invalid attribute names', assert => {
     assert.throws(() => {
         Saxophone.parseAttrs(' this is an attribute="value"');
-    }, new Error('Attribute names may not contain whitespace'));
+    }, /Attribute names may not contain whitespace/);
     assert.end();
 });
 
 test('should not parse unquoted attribute values', assert => {
     assert.throws(() => {
         Saxophone.parseAttrs(' attribute=value value=invalid');
-    }, new Error('Attribute values should be quoted'));
+    }, /Attribute values should be quoted/);
     assert.end();
 });
 
 test('should not parse misquoted attribute values', assert => {
     assert.throws(() => {
         Saxophone.parseAttrs(' attribute="value\'');
-    }, new Error('Unclosed attribute value'));
+    }, /Unclosed attribute value/);
     assert.end();
 });
 
