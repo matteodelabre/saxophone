@@ -13,22 +13,38 @@ const isWhitespace = character => character === ' ' ||
     character === '\r' || character === '\n' || character === '\t';
 
 /**
- * Parse given XML input and emit events corresponding
+ * Parse a XML stream and emit events corresponding
  * to the different tokens encountered
  *
+ * @memberof Saxophone#
  * @param {string} input XML input
+ * @emits Saxophone#error
+ * @emits Saxophone#text
+ * @emits Saxophone#cdata
+ * @emits Saxophone#comment
+ * @emits Saxophone#processinginstruction
+ * @emits Saxophone#tagopen
+ * @emits Saxophone#tagclose
+ * @emits Saxophone#end
  */
 const parse = function (input) {
+    const end = input.length;
     let position = 0;
-    const parseAttrs = parseAttributes.bind(this);
 
-    while (position < input.length) {
+    while (position < end) {
         // ensure the next char is opening a tag
         if (input[position] !== '<') {
             const nextTag = input.indexOf('<', position);
 
             // if we reached the end, emit a last "text" node and break
             if (nextTag === -1) {
+                /**
+                 * Text token event
+                 *
+                 * @event Saxophone#text
+                 * @type {object}
+                 * @prop {string} contents The text value
+                 */
                 this.emit('text', {contents: input.slice(position)});
                 break;
             }
@@ -46,23 +62,34 @@ const parse = function (input) {
             position += 1;
             const nextNextChar = input[position];
 
-            // recognize CDATA sections (<![CDATA[ ... ]]>)
             if (nextNextChar === '[' && input.slice(position + 1, position + 7) === 'CDATA[') {
                 position += 7;
                 const cdataClose = input.indexOf(']]>', position);
 
                 if (cdataClose === -1) {
+                    /**
+                     * Error event
+                     *
+                     * @event Saxophone#error
+                     * @type {Error}
+                     */
                     this.emit('error', new Error('Unclosed CDATA section'));
                     break;
                 }
 
-                // emit a "cdata" node with the section contents
+                /**
+                 * CDATA token event
+                 * (<![CDATA[ ... ]]>)
+                 *
+                 * @event Saxophone#cdata
+                 * @type {object}
+                 * @prop {string} contents The CDATA contents
+                 */
                 this.emit('cdata', {contents: input.slice(position, cdataClose)});
                 position = cdataClose + 3;
                 continue;
             }
 
-            // recognize comments (<!-- ... -->)
             if (nextNextChar === '-' && input[position + 1] === '-') {
                 position += 2;
                 const commentClose = input.indexOf('--', position);
@@ -77,7 +104,14 @@ const parse = function (input) {
                     break;
                 }
 
-                // emit a "comment" node with the comment contents
+                /**
+                 * Comment token event
+                 * (<!-- ... -->)
+                 *
+                 * @event Saxophone#comment
+                 * @type {object}
+                 * @prop {string} contents The comment contents
+                 */
                 this.emit('comment', {contents: input.slice(position, commentClose)});
                 position = commentClose + 3;
                 continue;
@@ -88,7 +122,6 @@ const parse = function (input) {
             break;
         }
 
-        // recognize processing instructions (<? ... ?>)
         if (nextChar === '?') {
             position += 1;
             const piClose = input.indexOf('?>', position);
@@ -98,7 +131,14 @@ const parse = function (input) {
                 break;
             }
 
-            // emit a "processinginstruction" node with its contents
+            /**
+             * Processing instruction token event
+             * (<? ... ?>)
+             *
+             * @event Saxophone#processinginstruction
+             * @type {object}
+             * @prop {string} contents The instruction contents
+             */
             this.emit('processinginstruction', {contents: input.slice(position, piClose)});
             position = piClose + 2;
             continue;
@@ -114,6 +154,14 @@ const parse = function (input) {
 
         // check if the tag is a closing tag
         if (input[position] === '/') {
+            /**
+             * Closing tag token event
+             * (</tag>)
+             *
+             * @event Saxophone#tagclose
+             * @type {object}
+             * @prop {string} name The tag name
+             */
             this.emit('tagclose', {name: input.slice(position + 1, tagClose)});
             position = tagClose + 1;
             continue;
@@ -127,9 +175,20 @@ const parse = function (input) {
         const whitespace = input.slice(position).search(/\s/);
 
         if (whitespace === -1 || whitespace >= tagClose - position) {
+            /**
+             * Opening tag token event
+             * (<tag attr="value">)
+             *
+             * @event Saxophone#tagopen
+             * @type {object}
+             * @prop {string} name The tag name
+             * @prop {string} attrs The tag attributes
+             * (use Saxophone.parseAttributes) to parse the string to a hash
+             * @prop {bool} isSelfClosing Whether the tag is self-closing (<tag />)
+             */
             this.emit('tagopen', {
                 name: input.slice(position, realTagClose),
-                attributes: {},
+                attrs: '',
                 isSelfClosing
             });
         } else if (whitespace === 0) {
@@ -138,7 +197,7 @@ const parse = function (input) {
         } else {
             this.emit('tagopen', {
                 name: input.slice(position, position + whitespace),
-                attributes: parseAttrs(input, position + whitespace, realTagClose),
+                attrs: input.slice(position + whitespace, realTagClose),
                 isSelfClosing
             });
         }
@@ -146,14 +205,22 @@ const parse = function (input) {
         position = tagClose + 1;
     }
 
+    /**
+     * End of stream event
+     *
+     * @event Saxophone#end
+     */
     this.emit('end');
 };
 
 /**
  * Parse XML attributes
+ *
+ * @memberof Saxophone
  */
-const parseAttributes = function (input, position, end) {
-    const attributes = {};
+const parseAttrs = input => {
+    const attrs = {}, end = input.length;
+    let position = 0;
 
     while (position < end) {
         // skip all whitespace
@@ -205,11 +272,11 @@ const parseAttributes = function (input, position, end) {
 
         const attrValue = input.slice(position, endQuote);
 
-        attributes[attrName] = attrValue;
+        attrs[attrName] = attrValue;
         position = endQuote + 1;
     }
 
-    return attributes;
+    return attrs;
 };
 
 const proto = {...EventEmitter.prototype, parse};
@@ -217,4 +284,5 @@ const Saxophone = () => {
     return Object.create(proto);
 };
 
+Saxophone.parseAttrs = parseAttrs;
 module.exports = Saxophone;

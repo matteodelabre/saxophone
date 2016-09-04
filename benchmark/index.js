@@ -22,6 +22,10 @@ const xml = fs.readFileSync(path.join(__dirname, 'fixture.xml')).toString();
 (new Benchmark.Suite)
     .add('Saxophone', () => {
         const parser = Saxophone();
+
+        // force Saxophone to parse the attributes
+        parser.on('tagopen', ({attrs}) => Saxophone.parseAttrs(attrs));
+
         parser.parse(xml);
     })
     .add('EasySax', () => {
