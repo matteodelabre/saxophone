@@ -1,20 +1,21 @@
-/* eslint-disable no-unused-vars */
 'use strict';
 
+require('babel-register');
+
+// benchmarking libraries
 const Benchmark = require('benchmark');
 const fs = require('fs');
 const path = require('path');
+const failsafe = require('./require-failsafe')();
 
-// benchmarked libraries:
+// benchmarked libraries
 const Saxophone = require('../dist');
-const failSafe = require('./require-failsafe')();
+const EasySax = failsafe.require('easysax');
+const expat = failsafe.require('node-expat');
+const libxmljs = failsafe.require('libxmljs');
+const sax = failsafe.require('sax');
 
-const EasySax = failSafe.require('easysax');
-const expat = failSafe.require('node-expat');
-const libxmljs = failSafe.require('libxmljs');
-const sax = failSafe.require('sax');
-
-failSafe.commit();
+failsafe.commit();
 
 // test file:
 const xml = fs.readFileSync(path.join(__dirname, 'fixture.xml')).toString();
