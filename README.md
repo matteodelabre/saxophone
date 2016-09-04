@@ -120,7 +120,7 @@ so you need to set them up before calling it.
 `xml` is a string containing the XML that you want to parse. At this
 time, Saxophone does not support `Buffer`s or `Stream`s.
 
-### `Saxophone.parseAttrs(attrs)`
+#### `Saxophone.parseAttrs(attrs)`
 
 Parses a string list of XML attributes, as produced by the main parsing
 algorithm. This is not done automatically because it may not be required
