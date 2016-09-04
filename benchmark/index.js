@@ -9,7 +9,7 @@ const path = require('path');
 const failsafe = require('./require-failsafe')();
 
 // benchmarked libraries
-const Saxophone = require('../dist');
+const Saxophone = require('../lib');
 const EasySax = failsafe.require('easysax');
 const expat = failsafe.require('node-expat');
 const libxmljs = failsafe.require('libxmljs');
@@ -24,16 +24,20 @@ const xml = fs.readFileSync(path.join(__dirname, 'fixture.xml')).toString();
     .add('Saxophone', () => {
         const parser = Saxophone();
 
-        // force Saxophone to parse the attributes
+        // force Saxophone to parse attributes and entities
         parser.on('tagopen', ({attrs}) => Saxophone.parseAttrs(attrs));
+        parser.on('text', ({contents}) => {
+            Saxophone.parseEntities(contents);
+        });
 
         parser.parse(xml);
     })
     .add('EasySax', () => {
         const parser = new EasySax();
 
-        // force EasySax to parse the attributes
+        // force EasySax to parse attributes and entities
         parser.on('startNode', (elem, attr) => attr());
+        parser.on('textNode', (text, uq) => uq(text));
 
         parser.parse(xml);
     })

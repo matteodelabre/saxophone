@@ -37,10 +37,10 @@ $ npm install --save saxophone
 
 | Library            | Operations per second (higher is better) |
 |--------------------|-----------------------------------------:|
-| **Saxophone**      | **2,428 ops/sec ±4.21%**                 |
-| EasySax            | 2,206 ops/sec ±4.21%                     |
-| node-expat         | 888 ops/sec ±4.99%                       |
-| libxmljs.SaxParser | 591 ops/sec ±3.93%                       |
+| **Saxophone**      | **1,099 ops/sec ±2.16%**                 |
+| **EasySax**        | **1,033 ops/sec ±2.52%**                 |
+| node-expat         | 360 ops/sec ±3.76%                       |
+| libxmljs.SaxParser | 236 ops/sec ±3.94%                       |
 | sax-js             | 113 ops/sec ±3.87%                       |
 
 To run the benchmarks by yourself, use the following commands:
