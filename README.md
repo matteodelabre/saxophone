@@ -77,7 +77,7 @@ const parser = Saxophone();
 // such as <example id="1" /> - see below for a list of events
 parser.on('tagopen', tag => {
     console.log(
-        `Open tag "${tag.name}" with attributes: ${JSON.stringify(tag.attributes)}.`
+        `Open tag "${tag.name}" with attributes: ${JSON.stringify(Saxophone.parseAttrs(tag.attrs))}.`
     );
 });
 
@@ -120,6 +120,15 @@ so you need to set them up before calling it.
 `xml` is a string containing the XML that you want to parse. At this
 time, Saxophone does not support `Buffer`s or `Stream`s.
 
+### `Saxophone.parseAttrs(attrs)`
+
+Parses a string list of XML attributes, as produced by the main parsing
+algorithm. This is not done automatically because it may not be required
+for every tag and it takes some time.
+
+The result is an object associating the attribute names (as object keys)
+to their attribute values (as object values).
+
 ### Events
 
 #### `tagopen`
@@ -129,7 +138,7 @@ both regular tags and self-closing tags. An object is passed
 with the following data.
 
 * `name`: name of the parsed tag.
-* `attributes`: map containing the tag's attributes as names -> values.
+* `attrs`: attributes of the tag (as a string). To parse this string, use `Saxophone.parseAttrs`.
 * `isSelfClosing`: true if the tag is self-closing.
 
 #### `tagclose`
