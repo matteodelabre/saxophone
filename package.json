@@ -1,7 +1,7 @@
 {
   "name": "@scalableminds/saxophone",
   "description": "Fast and lightweight event-driven XML parser in pure JavaScript",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "main": "dist/index.js",
   "repository": {
