@@ -12,7 +12,7 @@
     "build": "webpack -p --progress --colors",
     "prepublish": "npm run build",
     "lint": "eslint .",
-    "tape": "tape -r babel-register -r babel-polyfill 'lib/**/*.test.js'",
+    "tape": "tape 'lib/**/*.test.js'",
     "test": "npm run --silent tape | faucet",
     "coverage": "nyc --reporter=html --reporter=text npm --silent run tape",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
