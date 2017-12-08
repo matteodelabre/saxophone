@@ -1,6 +1,6 @@
 # Saxophone 🎷
 
-Fast and lightweight event-driven XML parser in pure JavaScript.
+Fast and lightweight event-driven streaming XML parser in pure JavaScript.
 
 [![npm version](https://img.shields.io/npm/v/saxophone.svg?style=flat-square)](https://www.npmjs.com/package/saxophone)
 [![npm downloads](https://img.shields.io/npm/dm/saxophone.svg?style=flat-square)](https://www.npmjs.com/package/saxophone)
@@ -100,6 +100,43 @@ Open tag "example" with attributes: {"id":"2"}.
 Parsing finished.
 ```
 
+### Example (streaming)
+
+Same example as above but with `Stream`s.
+
+```js
+const Saxophone = require('saxophone');
+const parser = Saxophone();
+
+// called whenever an opening tag is found in the document,
+// such as <example id="1" /> - see below for a list of events
+parser.on('tagopen', tag => {
+    console.log(
+        `Open tag "${tag.name}" with attributes: ${JSON.stringify(Saxophone.parseAttrs(tag.attrs))}.`
+    );
+});
+
+// called when parsing the document is done
+parser.on('end', () => {
+    console.log('Parsing finished.');
+});
+
+
+// stdin is '<root><example id="1" /><example id="2" /></root>'
+process.stdin.setEncoding('utf8');
+process.stdin.pipe(parser);
+```
+
+Output:
+
+```sh
+Open tag "root" with attributes: {}.
+Open tag "example" with attributes: {"id":"1"}.
+Open tag "example" with attributes: {"id":"2"}.
+Parsing finished.
+```
+
+
 ### API
 
 #### `Saxophone()`
@@ -114,11 +151,26 @@ with listeners, check out [Node's documentation.](https://nodejs.org/api/events.
 
 #### `Saxophone#parse(xml)`
 
-Triggers the actual parsing. This method will fire registered listeners
+Triggers the actual parsing of a whole document. This method will fire registered listeners
 so you need to set them up before calling it.
 
 `xml` is a string containing the XML that you want to parse. At this
-time, Saxophone does not support `Buffer`s or `Stream`s.
+time, Saxophone does not support `Buffer`s.
+
+#### `Saxophone#write(xml)`
+
+Triggers one step of the parsing. This method will fire registered listeners
+so you need to set them up before calling it.
+
+`xml` is a string containing a chunk of the XML that you want to parse.
+
+#### `Saxophone#end(xml = "")`
+
+Triggers the last step of the parsing.
+This method will fire registered listeners so you need to set them up before calling it.
+Same as `Saxophone#write(xml)`, but closes the stream.
+
+`xml` is a string containing a chunk of the XML that you want to parse.
 
 #### `Saxophone.parseAttrs(attrs)`
 
@@ -128,6 +180,15 @@ for every tag and it takes some time.
 
 The result is an object associating the attribute names (as object keys)
 to their attribute values (as object values).
+
+#### `Saxophone.parseEntities(text)`
+
+Parses a piece of XML text and expands all XML entities inside it to
+the character they represent. Just like attributes, this is not
+parsed automatically because it takes some time.
+
+This ignores invalid entities, including unrecognized ones, leaving them
+as-is.
 
 ### Events
 
@@ -156,12 +217,29 @@ Because this library's goal is not to provide accurate error
 reports, the passed error will only contain a short description
 of the syntax error (without giving the position, for example).
 
+#### `processinginstruction`
+
+Emitted when a processing instruction (such as `<? contents ?>`)
+is parsed. An object with the `contents` of the processing
+instruction is passed.
+
 #### `text`
 
 Emitted when a text node between two tags is parsed.
 An object with the `contents` of the text node is passed.
 You might need to expand XML entities inside the contents of
 the text node, using `Saxophone.parseEntities`.
+
+#### `cdata`
+
+Emitted when a CDATA section (such as `<![CDATA[ contents ]]>`)
+is parsed. An object with the `contents` of the CDATA section
+is passed.
+
+#### `comment`
+
+Emitted when a comment (such as `<!-- contents -->`)
+is parsed. An object with the `contents` of the comment is passed.
 
 #### `end`
 
