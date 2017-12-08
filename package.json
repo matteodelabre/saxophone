@@ -1,7 +1,7 @@
 {
-  "name": "@scalableminds/saxophone",
+  "name": "saxophone",
   "description": "Fast and lightweight event-driven XML parser in pure JavaScript",
-  "version": "0.3.1",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "dist/index.js",
   "repository": {
@@ -12,7 +12,7 @@
     "build": "webpack -p --progress --colors",
     "prepublish": "npm run build",
     "lint": "eslint .",
-    "tape": "tape 'lib/**/*.test.js'",
+    "tape": "tape -r babel-register -r babel-polyfill 'lib/**/*.test.js'",
     "test": "npm run --silent tape | faucet",
     "coverage": "nyc --reporter=html --reporter=text npm --silent run tape",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
