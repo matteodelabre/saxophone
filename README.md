@@ -73,7 +73,7 @@ $ npm run coverage
 
 ```js
 const Saxophone = require('saxophone');
-const parser = Saxophone();
+const parser = new Saxophone();
 
 // called whenever an opening tag is found in the document,
 // such as <example id="1" /> - see below for a list of events
@@ -84,7 +84,7 @@ parser.on('tagopen', tag => {
 });
 
 // called when parsing the document is done
-parser.on('end', () => {
+parser.on('finish', () => {
     console.log('Parsing finished.');
 });
 
@@ -108,7 +108,7 @@ Same example as above but with `Stream`s.
 
 ```js
 const Saxophone = require('saxophone');
-const parser = Saxophone();
+const parser = new Saxophone();
 
 // called whenever an opening tag is found in the document,
 // such as <example id="1" /> - see below for a list of events
@@ -119,7 +119,7 @@ parser.on('tagopen', tag => {
 });
 
 // called when parsing the document is done
-parser.on('end', () => {
+parser.on('finish', () => {
     console.log('Parsing finished.');
 });
 
@@ -138,41 +138,33 @@ Open tag "example" with attributes: {"id":"2"}.
 Parsing finished.
 ```
 
-
 ### API
 
-#### `Saxophone()`
+#### `new Saxophone()`
 
-Returns a new Saxophone instance. This is a factory method,
-so you **must not prefix it with the `new` keyword.**
+Creates a new Saxophone instance.
 
 #### `Saxophone#on()`, `Saxophone#removeListener()`, ...
 
-Saxophone composes with the EventEmitter methods. To work
-with listeners, check out [Node's documentation.](https://nodejs.org/api/events.html)
+Saxophone extends `Stream.Writable` which in turns extends `EventEmitter`. See the relevant [Node documentation.](https://nodejs.org/api/events.html) to learn more about listeners.
 
 #### `Saxophone#parse(xml)`
 
-Triggers the actual parsing of a whole document. This method will fire registered listeners
-so you need to set them up before calling it.
+Triggers the actual parsing of a whole document. This method will fire registered listeners, so you need to set them up before calling it.
 
-`xml` is a string containing the XML that you want to parse. At this
-time, Saxophone does not support `Buffer`s.
+`xml` is an UTF-8 string or a `Buffer` containing the XML that you want to parse.
 
 #### `Saxophone#write(xml)`
 
-Triggers one step of the parsing. This method will fire registered listeners
-so you need to set them up before calling it.
+Triggers one step of the parsing. This method will fire registered listeners so you need to set them up before calling it.
 
-`xml` is a string containing a chunk of the XML that you want to parse.
+`xml` is an UTF-8 string or a `Buffer` containing a chunk of the XML that you want to parse.
 
 #### `Saxophone#end(xml = "")`
 
-Triggers the last step of the parsing.
-This method will fire registered listeners so you need to set them up before calling it.
-Same as `Saxophone#write(xml)`, but closes the stream.
+Triggers the last step of the parsing. This method will fire registered listeners so you need to set them up before calling it. Same as `Saxophone#write(xml)`, but closes the stream.
 
-`xml` is a string containing a chunk of the XML that you want to parse.
+`xml` is a UTF-8 string or a `Buffer` containing a chunk of the XML that you want to parse.
 
 #### `Saxophone.parseAttrs(attrs)`
 
@@ -243,7 +235,7 @@ is passed.
 Emitted when a comment (such as `<!-- contents -->`)
 is parsed. An object with the `contents` of the comment is passed.
 
-#### `end`
+#### `finish`
 
 Emitted after all events, without arguments.
 
