@@ -245,7 +245,12 @@ is parsed. An object with the `contents` of the comment is passed.
 
 Emitted after all events, without arguments.
 
+## Contributions
+
+This is free and open source software. All contributions (even small ones) are welcome. [Check out the contribution guide to get started!](CONTRIBUTING.md)
+
+Thanks to [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API.
+
 ## License
 
-Released under the MIT license.  
-[See the full license text.](LICENSE)
+Released under the MIT license. [See the full license text.](LICENSE)
