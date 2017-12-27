@@ -10,7 +10,7 @@ Fast and lightweight event-driven streaming XML parser in pure JavaScript.
 
 Saxophone is inspired by SAX parsers like
 [sax-js](https://github.com/isaacs/sax-js) and
-[easysax](https://github.com/vflash/easysax): it does not generate any
+[EasySax](https://github.com/vflash/easysax): it does not generate any
 DOM while parsing documents. Instead, it reports parsing events
 for each tag or text node encountered. This means that Saxophone
 has a really low memory footprint.
@@ -35,13 +35,15 @@ $ npm install --save saxophone
 
 ## Benchmarks
 
+These are the benchmarks results as run on a Intel® Core™ i7-7500U processor (2.70GHz, 2 physical cores with 2 logical cores each).
+
 | Library            | Operations per second (higher is better) |
 |--------------------|-----------------------------------------:|
-| **Saxophone**      | **1,099 ops/sec ±2.16%**                 |
-| **EasySax**        | **1,033 ops/sec ±2.52%**                 |
-| node-expat         | 360 ops/sec ±3.76%                       |
-| libxmljs.SaxParser | 236 ops/sec ±3.94%                       |
-| sax-js             | 113 ops/sec ±3.87%                       |
+| **Saxophone**      | **3,717 ops/sec ±1.41%**                 |
+| **EasySax**        | **4,346 ops/sec ±2.56%**                 |
+| node-expat         | 1,161 ops/sec ±1.94%                     |
+| libxmljs.SaxParser | 1,040 ops/sec ±1.53%                     |
+| sax-js             | 760 ops/sec ±2.30%                       |
 
 To run the benchmarks by yourself, use the following commands:
 
