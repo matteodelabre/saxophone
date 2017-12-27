@@ -18,6 +18,13 @@
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "benchmark": "node benchmark"
   },
+  "nyc": {
+    "exclude": [
+      "dist",
+      "node_modules",
+      "lib/**/*.test.js"
+    ]
+  },
   "files": [
     "dist"
   ],
