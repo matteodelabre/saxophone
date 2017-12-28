@@ -5,7 +5,7 @@ module.exports = {
 
     output: {
         path: path.join(__dirname, 'dist'),
-        library: 'Jour',
+        library: 'Saxophone',
         libraryTarget: 'umd',
         filename: 'index.js'
     },
@@ -13,10 +13,18 @@ module.exports = {
     target: 'node',
 
     module: {
-        loaders: [{
+        rules: [{
             test: /\.js$/,
             include: path.join(__dirname, 'lib'),
-            loader: 'babel',
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    presets: ['babel-preset-env'],
+                    plugins: [
+                        require('babel-plugin-transform-object-rest-spread')
+                    ]
+                }
+            }
         }]
     }
 };
