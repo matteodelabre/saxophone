@@ -5,6 +5,7 @@
 ### Breaking changes
 
 * `Saxophone()` is now a constructor and no longer a factory function, so it should be prefixed by the `new` operator. Otherwise, an error will be thrown stating that a class cannot be called as a function.
+* Node v0.12 and v5 reached end-of-life and are no longer supported.
 
 ### New features
 
