@@ -1,7 +1,7 @@
 {
   "name": "@scalableminds/saxophone",
   "description": "Fast and lightweight event-driven XML parser in pure JavaScript",
-  "version": "0.5.0",
+  "version": "0.3.0",
   "license": "MIT",
   "main": "dist/index.js",
   "repository": {
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "webpack -p --progress --colors",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "lint": "eslint .",
     "tape": "tape 'lib/**/*.test.js'",
     "test": "npm run --silent tape | faucet",
@@ -18,15 +18,23 @@
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "benchmark": "node benchmark"
   },
+  "nyc": {
+    "exclude": [
+      "dist",
+      "node_modules",
+      "lib/**/*.test.js"
+    ]
+  },
   "files": [
     "dist"
   ],
   "engines": {
-    "node": "0.12 || 4 || 5 || 6"
+    "node": "4 || 6 || 8 || 9"
   },
   "keywords": [
     "xml",
     "parser",
+    "stream",
     "sax",
     "fast"
   ],
@@ -36,24 +44,25 @@
     "url": "https://github.com/matteodelabre"
   },
   "devDependencies": {
-    "babel-core": "^6.13.2",
-    "babel-loader": "^6.2.5",
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
-    "babel-polyfill": "^6.13.0",
-    "babel-preset-es2015": "^6.13.2",
-    "babel-register": "^6.11.6",
-    "benchmark": "^2.1.1",
-    "common-tags": "^1.3.1",
-    "coveralls": "^2.11.12",
-    "eslint": "^3.3.1",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "benchmark": "^2.1.4",
+    "common-tags": "^1.6.0",
+    "coveralls": "^3.0.0",
+    "eslint": "^4.14.0",
     "faucet": "0.0.1",
-    "lodash.uniq": "^4.4.0",
-    "nyc": "^8.1.0",
+    "lodash.uniq": "^4.5.0",
+    "nyc": "^11.4.1",
     "tap-spec": "^4.1.1",
-    "tape": "^4.6.0",
-    "webpack": "^1.13.2"
+    "tape": "^4.8.0",
+    "webpack": "^3.10.0"
   },
   "dependencies": {
-    "stream": "^0.0.2"
+    "readable-stream": "^2.3.3",
+    "string_decoder": "^1.0.3"
   }
 }

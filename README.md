@@ -8,21 +8,11 @@ Fast and lightweight event-driven streaming XML parser in pure JavaScript.
 [![coverage](https://img.shields.io/coveralls/matteodelabre/saxophone.svg?style=flat-square)](https://coveralls.io/github/matteodelabre/saxophone)
 [![dependencies status](http://img.shields.io/david/matteodelabre/saxophone.svg?style=flat-square)](https://david-dm.org/matteodelabre/saxophone)
 
-Saxophone is inspired by SAX parsers like
-[sax-js](https://github.com/isaacs/sax-js) and
-[easysax](https://github.com/vflash/easysax): it does not generate any
-DOM while parsing documents. Instead, it reports parsing events
-for each tag or text node encountered. This means that Saxophone
-has a really low memory footprint.
+Saxophone is inspired by SAX parsers such as [sax-js](https://github.com/isaacs/sax-js) and [EasySax](https://github.com/vflash/easysax): unlike most XML parsers, it does not create a Document Object Model ([DOM](https://en.wikipedia.org/wiki/Document_Object_Model)) tree as a result of parsing documents. Instead, it emits events for each tag or text node encountered as the parsing goes on. This means that Saxophone has a really low memory footprint and can easily parse large documents.
 
-The parser does not keep track of the document state while parsing
-and does not check whether the document is well-formed or valid,
-making it super-fast (see [benchmarks](#benchmarks) below).
+The parser does not keep track of the document state while parsing and, in particular, does not check whether the document is well-formed or valid, making it super-fast (see [benchmarks](#benchmarks) below).
 
-This library is best suited when you need to extract simple data
-out of an XML document that you know is well-formed. The parser will
-not report precise errors in case of syntax problems. An example would
-be reading data from an API endpoint.
+This library is best suited when you need to extract simple data out of an XML document that you know is well-formed. The parser will not report precise errors in case of syntax problems. An example would be reading data from an API endpoint.
 
 ## Installation
 
@@ -33,17 +23,19 @@ To install with `npm`:
 $ npm install --save saxophone
 ```
 
-## Benchmarks
+## Benchmark
+
+This benchmark compares the performance of four of the most popular SAX parsers against Saxophone’s performance while parsing a 21 KB document. Below are the results when run on a Intel® Core™ i7-7500U processor (2.70GHz, 2 physical cores with 2 logical cores each).
 
 | Library            | Operations per second (higher is better) |
 |--------------------|-----------------------------------------:|
-| **Saxophone**      | **1,099 ops/sec ±2.16%**                 |
-| **EasySax**        | **1,033 ops/sec ±2.52%**                 |
-| node-expat         | 360 ops/sec ±3.76%                       |
-| libxmljs.SaxParser | 236 ops/sec ±3.94%                       |
-| sax-js             | 113 ops/sec ±3.87%                       |
+| **Saxophone**      | **3,717 ops/sec ±1.41%**                 |
+| **EasySax**        | **4,346 ops/sec ±2.56%**                 |
+| node-expat         | 1,161 ops/sec ±1.94%                     |
+| libxmljs.SaxParser | 1,040 ops/sec ±1.53%                     |
+| sax-js             | 760 ops/sec ±2.30%                       |
 
-To run the benchmarks by yourself, use the following commands:
+To run the benchmark by yourself, use the following commands:
 
 ```sh
 $ git clone https://github.com/matteodelabre/saxophone.git
@@ -65,15 +57,15 @@ $ npm test
 $ npm run coverage
 ```
 
-## Usage
+## Examples
 
-### Example
+### Simple example
 
 ```js
 const Saxophone = require('saxophone');
-const parser = Saxophone();
+const parser = new Saxophone();
 
-// called whenever an opening tag is found in the document,
+// Called whenever an opening tag is found in the document,
 // such as <example id="1" /> - see below for a list of events
 parser.on('tagopen', tag => {
     console.log(
@@ -81,12 +73,12 @@ parser.on('tagopen', tag => {
     );
 });
 
-// called when parsing the document is done
-parser.on('end', () => {
+// Called when we are done parsing the document
+parser.on('finish', () => {
     console.log('Parsing finished.');
 });
 
-// triggers parsing - remember to set up listeners before
+// Triggers parsing - remember to set up listeners before
 // calling this method
 parser.parse('<root><example id="1" /><example id="2" /></root>');
 ```
@@ -100,15 +92,15 @@ Open tag "example" with attributes: {"id":"2"}.
 Parsing finished.
 ```
 
-### Example (streaming)
+### Streaming example
 
 Same example as above but with `Stream`s.
 
 ```js
 const Saxophone = require('saxophone');
-const parser = Saxophone();
+const parser = new Saxophone();
 
-// called whenever an opening tag is found in the document,
+// Called whenever an opening tag is found in the document,
 // such as <example id="1" /> - see below for a list of events
 parser.on('tagopen', tag => {
     console.log(
@@ -116,11 +108,10 @@ parser.on('tagopen', tag => {
     );
 });
 
-// called when parsing the document is done
-parser.on('end', () => {
+// Called when we are done parsing the document
+parser.on('finish', () => {
     console.log('Parsing finished.');
 });
-
 
 // stdin is '<root><example id="1" /><example id="2" /></root>'
 process.stdin.setEncoding('utf8');
@@ -136,67 +127,63 @@ Open tag "example" with attributes: {"id":"2"}.
 Parsing finished.
 ```
 
+## Documentation
 
-### API
+### `new Saxophone()`
 
-#### `Saxophone()`
+Creates a new Saxophone parser instance. This object is a writable stream that will emit an event for each tag or node parsed from the incoming data. See [the list of events below.](#events)
 
-Returns a new Saxophone instance. This is a factory method,
-so you **must not prefix it with the `new` keyword.**
+### `Saxophone#on()`, `Saxophone#removeListener()`, ...
 
-#### `Saxophone#on()`, `Saxophone#removeListener()`, ...
+Manage event listeners just like with any other event emitter. Saxophone inherits from all `EventEmitter` methods. See the relevant [Node documentation.](https://nodejs.org/api/events.html)
 
-Saxophone composes with the EventEmitter methods. To work
-with listeners, check out [Node's documentation.](https://nodejs.org/api/events.html)
+### `Saxophone#parse(xml)`
 
-#### `Saxophone#parse(xml)`
+Trigger the parsing of a whole document. This method will fire registered listeners, so you need to set them up before calling it. This is equivalent to writing `xml` to the stream and closing it.
 
-Triggers the actual parsing of a whole document. This method will fire registered listeners
-so you need to set them up before calling it.
+**Note:** the parser cannot be reused afterwards, you need to create a new instance.
 
-`xml` is a string containing the XML that you want to parse. At this
-time, Saxophone does not support `Buffer`s.
+Arguments:
 
-#### `Saxophone#write(xml)`
+* `xml` is an UTF-8 string or a `Buffer` containing the XML that you want to parse.
 
-Triggers one step of the parsing. This method will fire registered listeners
-so you need to set them up before calling it.
+This method returns the parser instance.
 
-`xml` is a string containing a chunk of the XML that you want to parse.
+### `Saxophone#write(xml)`
 
-#### `Saxophone#end(xml = "")`
+Parse a chunk of a XML document. This method will fire registered listeners so you need to set them up before calling it.
 
-Triggers the last step of the parsing.
-This method will fire registered listeners so you need to set them up before calling it.
-Same as `Saxophone#write(xml)`, but closes the stream.
+**Note:** an event is emitted for a tag or a node only when it has been closed. If the chunk starts a tag but does not close it, the tag will not be reported until it is closed by a later chunk.
 
-`xml` is a string containing a chunk of the XML that you want to parse.
+Arguments:
 
-#### `Saxophone.parseAttrs(attrs)`
+* `xml` is an UTF-8 string or a `Buffer` containing a chunk of the XML that you want to parse.
 
-Parses a string list of XML attributes, as produced by the main parsing
-algorithm. This is not done automatically because it may not be required
-for every tag and it takes some time.
+### `Saxophone#end(xml = "")`
 
-The result is an object associating the attribute names (as object keys)
-to their attribute values (as object values).
+Write an optional last chunk then close the stream. After the stream is closed, a final `finish` event is emitted and no other event will be emitted afterwards. No more data may be written into the stream after closing it.
 
-#### `Saxophone.parseEntities(text)`
+Arguments:
 
-Parses a piece of XML text and expands all XML entities inside it to
-the character they represent. Just like attributes, this is not
-parsed automatically because it takes some time.
+* `xml` is an UTF-8 string or a `Buffer` containing a chunk of the XML that you want to parse.
 
-This ignores invalid entities, including unrecognized ones, leaving them
-as-is.
+### `Saxophone.parseAttrs(attrs)`
+
+Parse a string list of XML attributes, as produced by the main parsing algorithm. This is not done automatically because it may not be required for every tag and it takes some time.
+
+The result is an object associating the attribute names (as object keys) to their attribute values (as object values).
+
+### `Saxophone.parseEntities(text)`
+
+Parses a piece of XML text and expands all XML entities inside it to the character they represent. Just like attributes, this is not parsed automatically because it takes some time.
+
+This ignores invalid entities, including unrecognized ones, leaving them as-is.
 
 ### Events
 
 #### `tagopen`
 
-Emitted when an opening tag is parsed. This encompasses
-both regular tags and self-closing tags. An object is passed
-with the following data.
+Emitted when an opening tag is parsed. This encompasses both regular tags and self-closing tags. An object is passed with the following data:
 
 * `name`: name of the parsed tag.
 * `attrs`: attributes of the tag (as a string). To parse this string, use `Saxophone.parseAttrs`.
@@ -204,48 +191,40 @@ with the following data.
 
 #### `tagclose`
 
-Emitted when a closing tag is parsed. An object containing the
-`name` of the tag is passed.
-
-#### `error`
-
-Emitted when a parsing error is encountered while reading the
-XML stream such that the rest of the XML cannot be correctly
-interpreted.
-
-Because this library's goal is not to provide accurate error
-reports, the passed error will only contain a short description
-of the syntax error (without giving the position, for example).
+Emitted when a closing tag is parsed. An object containing the `name` of the tag is passed.
 
 #### `processinginstruction`
 
-Emitted when a processing instruction (such as `<? contents ?>`)
-is parsed. An object with the `contents` of the processing
-instruction is passed.
+Emitted when a processing instruction (such as `<? contents ?>`) is parsed. An object with the `contents` of the processing instruction is passed.
 
 #### `text`
 
-Emitted when a text node between two tags is parsed.
-An object with the `contents` of the text node is passed.
-You might need to expand XML entities inside the contents of
-the text node, using `Saxophone.parseEntities`.
+Emitted when a text node between two tags is parsed. An object with the `contents` of the text node is passed. You might need to expand XML entities inside the contents of the text node, using `Saxophone.parseEntities`.
 
 #### `cdata`
 
-Emitted when a CDATA section (such as `<![CDATA[ contents ]]>`)
-is parsed. An object with the `contents` of the CDATA section
-is passed.
+Emitted when a CDATA section (such as `<![CDATA[ contents ]]>`) is parsed. An object with the `contents` of the CDATA section is passed.
 
 #### `comment`
 
-Emitted when a comment (such as `<!-- contents -->`)
-is parsed. An object with the `contents` of the comment is passed.
+Emitted when a comment (such as `<!-- contents -->`) is parsed. An object with the `contents` of the comment is passed.
 
-#### `end`
+#### `error`
+
+Emitted when a parsing error is encountered while reading the XML stream such that the rest of the XML cannot be correctly interpreted.
+
+Because this library's goal is not to provide accurate error reports, the passed error will only contain a short description of the syntax error (without giving the position, for example).
+
+#### `finish`
 
 Emitted after all events, without arguments.
 
+## Contributions
+
+This is free and open source software. All contributions (even small ones) are welcome. [Check out the contribution guide to get started!](CONTRIBUTING.md)
+
+Thanks to [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API.
+
 ## License
 
-Released under the MIT license.  
-[See the full license text.](LICENSE)
+Released under the MIT license. [See the full license text.](LICENSE)
