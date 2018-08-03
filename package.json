@@ -29,7 +29,7 @@
     "dist"
   ],
   "engines": {
-    "node": "4 || 6 || 8 || 9"
+    "node": "4 || 6 || 8 || 9 || 10"
   },
   "keywords": [
     "xml",
@@ -44,11 +44,11 @@
     "url": "https://github.com/matteodelabre"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "benchmark": "^2.1.4",
     "common-tags": "^1.6.0",
@@ -56,8 +56,8 @@
     "eslint": "^4.14.0",
     "faucet": "0.0.1",
     "lodash.uniq": "^4.5.0",
-    "nyc": "^11.4.1",
-    "tap-spec": "^4.1.1",
+    "nyc": "^13.0.1",
+    "tap-spec": "^5.0.0",
     "tape": "^4.8.0",
     "webpack": "^3.10.0"
   },
