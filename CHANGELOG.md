@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.0
+
+### Breaking changes
+
+* Node v4 and v9 reached end-of-life and are no longer supported.
+
 ## v0.3.0
 
 ### Breaking changes
