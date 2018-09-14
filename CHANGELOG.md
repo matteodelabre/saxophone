@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.1
+
+### Minor changes
+
+* Stop publishing the module as a transpiled source file, as all supported Node versions are compatible with the syntax that we use.
+
 ## v0.4.0
 
 ### Breaking changes
