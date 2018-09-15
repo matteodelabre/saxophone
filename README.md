@@ -212,7 +212,13 @@ Emitted when a comment (such as `<!-- contents -->`) is parsed. An object with t
 
 #### `error`
 
-Emitted when a parsing error is encountered while reading the XML stream such that the rest of the XML cannot be correctly interpreted.
+Emitted when a parsing error is encountered while reading the XML stream such that the rest of the XML cannot be correctly interpreted:
+
+* when a DOCTYPE node is found (not supported yet);
+* when a comment node contains the `--` sequence;
+* when opening and closing tags are mismatched or missing;
+* when a tag name starts with white space;
+* when nodes are unclosed (missing their final `>`).
 
 Because this library's goal is not to provide accurate error reports, the passed error will only contain a short description of the syntax error (without giving the position, for example).
 
@@ -224,7 +230,7 @@ Emitted after all events, without arguments.
 
 This is free and open source software. All contributions (even small ones) are welcome. [Check out the contribution guide to get started!](CONTRIBUTING.md)
 
-Thanks to [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API and the check for open/close tags mismatch.
+Thanks to [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API and the check for opening and closing tags mismatch.
 
 ## License
 

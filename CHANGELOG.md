@@ -5,7 +5,7 @@
 
 ### New features
 
-* Report errors when open/close tags are mismatched or omitted.
+* Report an error when opening and closing tags are mismatched or omitted.
 
 ## v0.4.3
 
