@@ -1,7 +1,5 @@
 'use strict';
 
-require('babel-register');
-
 // benchmarking libraries
 const Benchmark = require('benchmark');
 const fs = require('fs');

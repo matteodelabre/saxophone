@@ -1,3 +1,4 @@
+<!-- vim: set spelllang=en : -->
 # Contributing
 
 Thank you for your interest in contributing to this repo! All contributions (even small ones) are welcome. You can contribute either by submitting a new issue for a bug you encountered, or by fixing a reported bug.

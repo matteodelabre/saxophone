@@ -1,4 +1,11 @@
+<!-- vim: set spelllang=en : -->
 # Changelog
+
+## v0.5.0
+
+### New features
+
+* Report errors when open/close tags are mismatched or omitted.
 
 ## v0.4.3
 

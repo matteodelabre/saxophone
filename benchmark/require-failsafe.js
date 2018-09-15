@@ -31,8 +31,9 @@ module.exports = () => {
         commit: () => {
             if (notFound.length) {
                 console.error(
-                    '/!\\ To run benchmarks, please install the following ' +
-                    'missing modules:\n    npm install ' + notFound.join(' ')
+                    '/!\\ To run benchmarks, please install the following '
+                    + 'missing modules:\n    npm install --no-save '
+                    + notFound.join(' ')
                 );
                 process.exit();
             }

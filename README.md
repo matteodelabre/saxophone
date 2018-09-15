@@ -1,3 +1,4 @@
+<!-- vim: set spelllang=en : -->
 # Saxophone 🎷
 
 Fast and lightweight event-driven streaming XML parser in pure JavaScript.
@@ -16,7 +17,7 @@ This library is best suited when you need to extract simple data out of an XML d
 
 ## Installation
 
-This library works both in Node.JS ≥4.0 and recent browsers.
+This library works both in Node.JS ≥6.0 and recent browsers.
 To install with `npm`:
 
 ```sh
@@ -27,13 +28,13 @@ $ npm install --save saxophone
 
 This benchmark compares the performance of four of the most popular SAX parsers against Saxophone’s performance while parsing a 21 KB document. Below are the results when run on a Intel® Core™ i7-7500U processor (2.70GHz, 2 physical cores with 2 logical cores each).
 
-| Library            | Operations per second (higher is better) |
-|--------------------|-----------------------------------------:|
-| **Saxophone**      | **3,717 ops/sec ±1.41%**                 |
-| **EasySax**        | **4,346 ops/sec ±2.56%**                 |
-| node-expat         | 1,161 ops/sec ±1.94%                     |
-| libxmljs.SaxParser | 1,040 ops/sec ±1.53%                     |
-| sax-js             | 760 ops/sec ±2.30%                       |
+Library            | Version | Operations per second (higher is better)
+-------------------|--------:|----------------------------------------:
+**Saxophone**      |   0.5.0 |                         **6,840 ±1.48%**
+**EasySax**        |   0.3.2 |                         **7,354 ±1.16%**
+node-expat         |  2.3.17 |                             1,251 ±0.60%
+libxmljs.SaxParser |  0.19.5 |                             1,007 ±0.81%
+sax-js             |   1.2.4 |                               982 ±1.50%
 
 To run the benchmark by yourself, use the following commands:
 
@@ -41,7 +42,7 @@ To run the benchmark by yourself, use the following commands:
 $ git clone https://github.com/matteodelabre/saxophone.git
 $ cd saxophone
 $ npm install
-$ npm install easysax node-expat libxmljs sax
+$ npm install --no-save easysax node-expat libxmljs sax
 $ npm run benchmark
 ```
 
@@ -223,7 +224,7 @@ Emitted after all events, without arguments.
 
 This is free and open source software. All contributions (even small ones) are welcome. [Check out the contribution guide to get started!](CONTRIBUTING.md)
 
-Thanks to [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API.
+Thanks to [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API and the check for open/close tags mismatch.
 
 ## License
 
