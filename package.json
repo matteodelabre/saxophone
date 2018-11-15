@@ -6,7 +6,7 @@
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/matteodelabre/saxophone.git"
+    "url": "https://github.com/marcellino-ornelas/saxophone.git"
   },
   "scripts": {
     "lint": "eslint .",
@@ -33,9 +33,9 @@
     "fast"
   ],
   "author": {
-    "name": "Mattéo Delabre",
-    "email": "contact@matteodelabre.me",
-    "url": "https://github.com/matteodelabre"
+    "name": "Marcellino Ornelas",
+    "email": "marcellino.ornelas@gmail.com",
+    "url": "https://github.com/marcellino-ornelas"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",

@@ -1,4 +1,5 @@
 <!-- vim: set spelllang=en : -->
+
 # Saxophone 🎷
 
 Fast and lightweight event-driven streaming XML parser in pure JavaScript.
@@ -28,13 +29,13 @@ $ npm install --save saxophone
 
 This benchmark compares the performance of four of the most popular SAX parsers against Saxophone’s performance while parsing a 21 KB document. Below are the results when run on a Intel® Core™ i7-7500U processor (2.70GHz, 2 physical cores with 2 logical cores each).
 
-Library            | Version | Operations per second (higher is better)
--------------------|--------:|----------------------------------------:
-**Saxophone**      |   0.5.0 |                         **6,840 ±1.48%**
-**EasySax**        |   0.3.2 |                         **7,354 ±1.16%**
-node-expat         |  2.3.17 |                             1,251 ±0.60%
-libxmljs.SaxParser |  0.19.5 |                             1,007 ±0.81%
-sax-js             |   1.2.4 |                               982 ±1.50%
+| Library            | Version | Operations per second (higher is better) |
+| ------------------ | ------: | ---------------------------------------: |
+| **Saxophone**      |   0.5.0 |                         **6,840 ±1.48%** |
+| **EasySax**        |   0.3.2 |                         **7,354 ±1.16%** |
+| node-expat         |  2.3.17 |                             1,251 ±0.60% |
+| libxmljs.SaxParser |  0.19.5 |                             1,007 ±0.81% |
+| sax-js             |   1.2.4 |                               982 ±1.50% |
 
 To run the benchmark by yourself, use the following commands:
 
@@ -69,14 +70,16 @@ const parser = new Saxophone();
 // Called whenever an opening tag is found in the document,
 // such as <example id="1" /> - see below for a list of events
 parser.on('tagopen', tag => {
-    console.log(
-        `Open tag "${tag.name}" with attributes: ${JSON.stringify(Saxophone.parseAttrs(tag.attrs))}.`
-    );
+  console.log(
+    `Open tag "${tag.name}" with attributes: ${JSON.stringify(
+      Saxophone.parseAttrs(tag.attrs)
+    )}.`
+  );
 });
 
 // Called when we are done parsing the document
 parser.on('finish', () => {
-    console.log('Parsing finished.');
+  console.log('Parsing finished.');
 });
 
 // Triggers parsing - remember to set up listeners before
@@ -104,14 +107,16 @@ const parser = new Saxophone();
 // Called whenever an opening tag is found in the document,
 // such as <example id="1" /> - see below for a list of events
 parser.on('tagopen', tag => {
-    console.log(
-        `Open tag "${tag.name}" with attributes: ${JSON.stringify(Saxophone.parseAttrs(tag.attrs))}.`
-    );
+  console.log(
+    `Open tag "${tag.name}" with attributes: ${JSON.stringify(
+      Saxophone.parseAttrs(tag.attrs)
+    )}.`
+  );
 });
 
 // Called when we are done parsing the document
 parser.on('finish', () => {
-    console.log('Parsing finished.');
+  console.log('Parsing finished.');
 });
 
 // stdin is '<root><example id="1" /><example id="2" /></root>'
@@ -146,7 +151,7 @@ Trigger the parsing of a whole document. This method will fire registered listen
 
 Arguments:
 
-* `xml` is an UTF-8 string or a `Buffer` containing the XML that you want to parse.
+- `xml` is an UTF-8 string or a `Buffer` containing the XML that you want to parse.
 
 This method returns the parser instance.
 
@@ -158,7 +163,7 @@ Parse a chunk of a XML document. This method will fire registered listeners so y
 
 Arguments:
 
-* `xml` is an UTF-8 string or a `Buffer` containing a chunk of the XML that you want to parse.
+- `xml` is an UTF-8 string or a `Buffer` containing a chunk of the XML that you want to parse.
 
 ### `Saxophone#end(xml = "")`
 
@@ -166,7 +171,7 @@ Write an optional last chunk then close the stream. After the stream is closed, 
 
 Arguments:
 
-* `xml` is an UTF-8 string or a `Buffer` containing a chunk of the XML that you want to parse.
+- `xml` is an UTF-8 string or a `Buffer` containing a chunk of the XML that you want to parse.
 
 ### `Saxophone.parseAttrs(attrs)`
 
@@ -186,9 +191,9 @@ This ignores invalid entities, including unrecognized ones, leaving them as-is.
 
 Emitted when an opening tag is parsed. This encompasses both regular tags and self-closing tags. An object is passed with the following data:
 
-* `name`: name of the parsed tag.
-* `attrs`: attributes of the tag (as a string). To parse this string, use `Saxophone.parseAttrs`.
-* `isSelfClosing`: true if the tag is self-closing.
+- `name`: name of the parsed tag.
+- `attrs`: attributes of the tag (as a string). To parse this string, use `Saxophone.parseAttrs`.
+- `isSelfClosing`: true if the tag is self-closing.
 
 #### `tagclose`
 
@@ -214,17 +219,46 @@ Emitted when a comment (such as `<!-- contents -->`) is parsed. An object with t
 
 Emitted when a parsing error is encountered while reading the XML stream such that the rest of the XML cannot be correctly interpreted:
 
-* when a DOCTYPE node is found (not supported yet);
-* when a comment node contains the `--` sequence;
-* when opening and closing tags are mismatched or missing;
-* when a tag name starts with white space;
-* when nodes are unclosed (missing their final `>`).
+- when a DOCTYPE node is found (not supported yet);
+- when a comment node contains the `--` sequence;
+- when opening and closing tags are mismatched or missing;
+- when a tag name starts with white space;
+- when nodes are unclosed (missing their final `>`).
 
 Because this library's goal is not to provide accurate error reports, the passed error will only contain a short description of the syntax error (without giving the position, for example).
 
 #### `finish`
 
 Emitted after all events, without arguments.
+
+## Transform Stream (marcellino-ornelas)
+
+Saxophone can now be used as a transfrom stream to send the parsed XML to another stream. Saxophone works to keep low memory so it doesnt save any of the XML internally but uses events to fire certain data. So how do you tell the parser to send data to the next stream? The way to send data to another stream is to use the `parser.push()` method.
+
+Example:
+
+```xml
+<root>
+  <page>Hey this is some text</page>
+</root>
+```
+
+```javascript
+const Saxophone = require('saxophone');
+const parser = new Saxophone();
+
+parser.on('text', function(data) {
+  // Get the text from saxophone
+  const text = data.contents;
+
+  // Send the data to the next stream;
+  parser.push(text);
+});
+
+fs.createReadStream('file.xml')
+  .pipe(parser)
+  .pipe(process.stdout); // Hey this is some text
+```
 
 ## Contributions
 
