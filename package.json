@@ -4,6 +4,7 @@
   "version": "0.5.0",
   "license": "MIT",
   "main": "lib/index.js",
+  "types": "./types/saxophone.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/matteodelabre/saxophone.git"
