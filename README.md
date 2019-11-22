@@ -1,4 +1,3 @@
-<!-- vim: set spelllang=en : -->
 # Saxophone 🎷
 
 Fast and lightweight event-driven streaming XML parser in pure JavaScript.
@@ -9,7 +8,9 @@ Fast and lightweight event-driven streaming XML parser in pure JavaScript.
 [![coverage](https://img.shields.io/coveralls/matteodelabre/saxophone.svg?style=flat-square)](https://coveralls.io/github/matteodelabre/saxophone)
 [![dependencies status](http://img.shields.io/david/matteodelabre/saxophone.svg?style=flat-square)](https://david-dm.org/matteodelabre/saxophone)
 
-Saxophone is inspired by SAX parsers such as [sax-js](https://github.com/isaacs/sax-js) and [EasySax](https://github.com/vflash/easysax): unlike most XML parsers, it does not create a Document Object Model ([DOM](https://en.wikipedia.org/wiki/Document_Object_Model)) tree as a result of parsing documents. Instead, it emits events for each tag or text node encountered as the parsing goes on. This means that Saxophone has a really low memory footprint and can easily parse large documents.
+Saxophone is inspired by SAX parsers such as [sax-js](https://github.com/isaacs/sax-js) and [EasySax](https://github.com/vflash/easysax): unlike most XML parsers, it does not create a Document Object Model ([DOM](https://en.wikipedia.org/wiki/Document_Object_Model)) tree as a result of parsing documents.
+Instead, it emits events for each tag or text node encountered as the parsing goes on, which makes it an online algorithm.
+This means that Saxophone has a low memory footprint, can easily parse large documents, and can parse documents as they come from a stream.
 
 The parser does not keep track of the document state while parsing and, in particular, does not check whether the document is well-formed or valid, making it super-fast (see [benchmarks](#benchmarks) below).
 
@@ -230,7 +231,10 @@ Emitted after all events, without arguments.
 
 This is free and open source software. All contributions (even small ones) are welcome. [Check out the contribution guide to get started!](CONTRIBUTING.md)
 
-Thanks to [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API and the check for opening and closing tags mismatch.
+Thanks to:
+
+* [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API and the check for opening and closing tags mismatch.
+* [winston01](https://github.com/winston01) for spotting and fixing an error in the parser when a tag sits astride two chunks.
 
 ## License
 
