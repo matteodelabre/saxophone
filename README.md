@@ -31,13 +31,11 @@ This benchmark compares the performance of four of the most popular SAX parsers 
 
 Library            | Version | Operations per second (higher is better)
 -------------------|--------:|----------------------------------------:
-**Saxophone**      |   0.5.0 |                         **6,840 ±1.48%**
-**EasySax**        |   0.3.2 |                         **7,354 ±1.16%**
-node-expat         |  2.3.17 |                             1,251 ±0.60%
-libxmljs.SaxParser |  0.19.5 |                             1,007 ±0.81%
-sax-js             |   1.2.4 |                               982 ±1.50%
-
-To run the benchmark by yourself, use the following commands:
+**Saxophone**      |   0.5.0 |                         **6,797 ±2.99%**
+**EasySax**        |   0.3.2 |                         **7,919 ±1.21%**
+node-expat         |  2.3.18 |                               904 ±1.77%
+libxmljs.SaxParser |  0.19.7 |                               869 ±0.98%
+sax-js             |   1.2.4 |                               634 ±2.01%
 
 ```sh
 $ git clone https://github.com/matteodelabre/saxophone.git
