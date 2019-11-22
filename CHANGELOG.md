@@ -1,7 +1,7 @@
 <!-- vim: set spelllang=en : -->
 # Changelog
 
-## v0.6.0
+## v0.6.1
 
 ### Breaking changes
 
