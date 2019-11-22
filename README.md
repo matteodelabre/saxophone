@@ -12,7 +12,7 @@ Saxophone is inspired by SAX parsers such as [sax-js](https://github.com/isaacs/
 Instead, it emits events for each tag or text node encountered as the parsing goes on, which makes it an online algorithm.
 This means that Saxophone has a low memory footprint, can easily parse large documents, and can parse documents as they come from a stream.
 
-The parser does not keep track of the document state while parsing and, in particular, does not check whether the document is well-formed or valid, making it super-fast (see [benchmarks](#benchmarks) below).
+The parser does not keep track of the document state while parsing and, in particular, does not check whether the document is well-formed or valid, making it super-fast (see the [benchmark](#Benchmark) below).
 
 This library is best suited when you need to extract simple data out of an XML document that you know is well-formed. The parser will not report precise errors in case of syntax problems. An example would be reading data from an API endpoint.
 

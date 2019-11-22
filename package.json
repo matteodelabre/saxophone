@@ -32,6 +32,9 @@
     "sax",
     "fast"
   ],
+  "files": [
+    "lib/**/*"
+  ],
   "author": {
     "name": "Mattéo Delabre",
     "email": "contact@matteodelabre.me",
