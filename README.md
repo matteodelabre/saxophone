@@ -4,7 +4,7 @@ Fast and lightweight event-driven streaming XML parser in pure JavaScript.
 
 [![npm version](https://img.shields.io/npm/v/saxophone.svg?style=flat-square)](https://www.npmjs.com/package/saxophone)
 [![npm downloads](https://img.shields.io/npm/dm/saxophone.svg?style=flat-square)](https://www.npmjs.com/package/saxophone)
-[![build status](https://img.shields.io/travis/matteodelabre/saxophone.svg?style=flat-square)](https://travis-ci.org/matteodelabre/saxophone)
+[![build status](https://img.shields.io/github/workflow/status/matteodelabre/saxophone/test?style=flat-square)](https://github.com/matteodelabre/saxophone/actions)
 [![coverage](https://img.shields.io/coveralls/matteodelabre/saxophone.svg?style=flat-square)](https://coveralls.io/github/matteodelabre/saxophone)
 [![dependencies status](http://img.shields.io/david/matteodelabre/saxophone.svg?style=flat-square)](https://david-dm.org/matteodelabre/saxophone)
 
@@ -18,7 +18,7 @@ This library is best suited when you need to extract simple data out of an XML d
 
 ## Installation
 
-This library works both in Node.JS ≥6.0 and recent browsers.
+This library works both on Node.JS and recent browsers.
 To install with `npm`:
 
 ```sh
