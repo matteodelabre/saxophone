@@ -23,7 +23,7 @@
     ]
   },
   "engines": {
-    "node": "8 || 10 || 12 || 13"
+    "node": "10 || 12 || 14 || 15"
   },
   "keywords": [
     "xml",
@@ -37,7 +37,7 @@
   ],
   "author": {
     "name": "Mattéo Delabre",
-    "email": "contact@matteodelabre.me",
+    "email": "spam@delab.re",
     "url": "https://github.com/matteodelabre"
   },
   "devDependencies": {
