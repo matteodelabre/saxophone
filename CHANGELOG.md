@@ -1,6 +1,13 @@
 <!-- vim: set spelllang=en : -->
 # Changelog
 
+## v0.7.0
+
+### Breaking changes
+
+* Node v8 and v13 reached end-of-life and are no longer supported.
+* Add support for Node v14 and v15.
+
 ## v0.6.1
 
 ### Breaking changes
@@ -46,4 +53,3 @@
 
 * To improve performance, attributes are no longer automatically parsed for every tag. Users should call `Saxophone#parseAttrs` whenever they actually want the attributes parsed.
 * To improve performance, entities are no longer automatically decoded for every text chunk. Users should call `Saxophone#parseEntities` whenever they actually want to decode entities from a text.
-
