@@ -1,6 +1,12 @@
 <!-- vim: set spelllang=en : -->
 # Changelog
 
+## v0.7.1
+
+### Fixed bugs
+
+* Fix parse error on attribute values containing '>'
+
 ## v0.7.0
 
 ### Breaking changes
