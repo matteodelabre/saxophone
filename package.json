@@ -13,7 +13,7 @@
     "tape": "tape 'lib/**/*.test.js'",
     "test": "npm run --silent tape | faucet",
     "coverage": "nyc --reporter=html --reporter=text npm --silent run tape",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "coveralls": "nyc report --reporter=lcov",
     "benchmark": "node benchmark"
   },
   "nyc": {
@@ -43,7 +43,6 @@
   "devDependencies": {
     "benchmark": "^2.1.4",
     "common-tags": "^1.8.0",
-    "coveralls": "^3.1.0",
     "eslint": "^7.15.0",
     "faucet": "0.0.1",
     "lodash.uniq": "^4.5.0",
