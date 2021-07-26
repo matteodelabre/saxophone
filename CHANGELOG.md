@@ -1,6 +1,12 @@
 <!-- vim: set spelllang=en : -->
 # Changelog
 
+## v0.7.2
+
+### Fixed bugs
+
+* Fix parse error when a comment’s ending sequence sits astride two chunks (`--` in the first and `>` in the second).
+
 ## v0.7.1
 
 ### Fixed bugs
