@@ -233,6 +233,7 @@ Thanks to:
 
 * [Norman Rzepka](https://github.com/normanrz) for implementing the streaming API and the check for opening and closing tags mismatch.
 * [winston01](https://github.com/winston01) for spotting and fixing an error in the parser when a tag sits astride two chunks.
+* [MattGson](https://github.com/MattGson) for spotting another similar error.
 
 ## License
 
