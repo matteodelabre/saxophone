@@ -43,12 +43,12 @@
   "devDependencies": {
     "benchmark": "^2.1.4",
     "common-tags": "^1.8.0",
-    "eslint": "^7.15.0",
+    "eslint": "^7.31.0",
     "faucet": "0.0.1",
     "lodash.uniq": "^4.5.0",
     "nyc": "^15.1.0",
     "tap-spec": "^5.0.0",
-    "tape": "^5.0.1"
+    "tape": "^5.2.2"
   },
   "dependencies": {
     "readable-stream": "^3.6.0",
