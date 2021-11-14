@@ -197,6 +197,10 @@ Emitted when a closing tag is parsed. An object containing the `name` of the tag
 
 Emitted when a processing instruction (such as `<? contents ?>`) is parsed. An object with the `contents` of the processing instruction is passed.
 
+#### `documenttypedefinition`
+
+Emitted when a document type definition (such as `<!DOCTYPE contents >`) is parsed. An object with the `contents` of the document type definition is passed.
+
 #### `text`
 
 Emitted when a text node between two tags is parsed. An object with the `contents` of the text node is passed. You might need to expand XML entities inside the contents of the text node, using `Saxophone.parseEntities`.
@@ -213,7 +217,6 @@ Emitted when a comment (such as `<!-- contents -->`) is parsed. An object with t
 
 Emitted when a parsing error is encountered while reading the XML stream such that the rest of the XML cannot be correctly interpreted:
 
-* when a DOCTYPE node is found (not supported yet);
 * when a comment node contains the `--` sequence;
 * when opening and closing tags are mismatched or missing;
 * when a tag name starts with white space;
