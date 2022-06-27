@@ -1,6 +1,14 @@
 <!-- vim: set spelllang=en : -->
 # Changelog
 
+## v0.8.0
+
+### Breaking changes
+
+* Node v10, v12, and v15 reached end-of-life and are no longer supported.
+* Add support for Node v16 and v18.
+* `Saxophone` no longer emits the `finish` event after a parsing error occurs (see <https://github.com/nodejs/node/pull/28979>).
+
 ## v0.7.2
 
 ### Fixed bugs
