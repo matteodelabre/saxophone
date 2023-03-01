@@ -44,7 +44,7 @@
     "benchmark": "^2.1.4",
     "common-tags": "^1.8.2",
     "eslint": "^8.18.0",
-    "faucet": "0.0.1",
+    "faucet": "0.0.4",
     "lodash.uniq": "^4.5.0",
     "nyc": "^15.1.0",
     "tap-spec": "^5.0.0",
